@@ -22,8 +22,10 @@ export const markBatchAttendance = async ({
     throw error;
   }
 
-  const dateObj = new Date(date);
-  const dateString = dateObj.toISOString().split('T')[0];
+  const dateString = typeof date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(date)
+    ? date
+    : new Date(date).toISOString().split('T')[0];
+  const dateObj = new Date(dateString + 'T00:00:00.000Z');
 
   const operations = records.map((rec) => {
     const validStatus = ['Present', 'Absent'].includes(rec.status)

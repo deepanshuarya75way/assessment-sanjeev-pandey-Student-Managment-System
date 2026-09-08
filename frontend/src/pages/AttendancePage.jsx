@@ -9,6 +9,14 @@ import * as subjectService from '../services/subjectService';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 
+const getTodayDateString = () => {
+  const d = new Date();
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
+
 const AttendancePage = () => {
   const { user } = useAuth();
   const toast = useToast();
@@ -21,7 +29,8 @@ const AttendancePage = () => {
 
   const [selectedCourse, setSelectedCourse] = useState('');
   const [selectedSubject, setSelectedSubject] = useState('');
-  const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
+  const [selectedDate, setSelectedDate] = useState(getTodayDateString());
+  const [isDateAlreadyMarked, setIsDateAlreadyMarked] = useState(false);
   const [roster, setRoster] = useState([]);
   const [loadingRoster, setLoadingRoster] = useState(false);
   const [submittingAttendance, setSubmittingAttendance] = useState(false);
@@ -87,21 +96,28 @@ const AttendancePage = () => {
           limit: 100,
         });
 
+        let alreadyMarked = false;
         const existingMap = {};
-        if (existingRes.success && existingRes.records) {
+        if (existingRes.success && existingRes.records && existingRes.records.length > 0) {
+          alreadyMarked = true;
           existingRes.records.forEach((rec) => {
-            if (rec.student) existingMap[rec.student._id] = rec.status;
+            const sid = rec.student?._id || rec.student;
+            if (sid) existingMap[String(sid)] = rec.status;
           });
         }
+        setIsDateAlreadyMarked(alreadyMarked);
 
-        const initialRoster = res.students.map((stu) => ({
-          studentId: stu._id,
-          code: stu.studentId,
-          name: `${stu.firstName} ${stu.lastName}`,
-          department: stu.department,
-          status: existingMap[stu._id] || 'Present',
-          remarks: '',
-        }));
+        const initialRoster = res.students.map((stu) => {
+          const sid = String(stu._id);
+          return {
+            studentId: sid,
+            code: stu.studentId,
+            name: `${stu.firstName} ${stu.lastName}`,
+            department: stu.department,
+            status: existingMap[sid] || 'Present',
+            remarks: '',
+          };
+        });
 
         setRoster(initialRoster);
       }
@@ -124,7 +140,7 @@ const AttendancePage = () => {
 
   const setStudentStatus = (studentId, status) => {
     setRoster((prev) =>
-      prev.map((item) => (item.studentId === studentId ? { ...item, status } : item))
+      prev.map((item) => (String(item.studentId) === String(studentId) ? { ...item, status } : item))
     );
   };
 
@@ -149,8 +165,16 @@ const AttendancePage = () => {
         records,
       });
 
-      toast.success(res.message || 'Attendance saved successfully.');
+      const pCount = roster.filter((r) => r.status === 'Present').length;
+      const aCount = roster.filter((r) => r.status === 'Absent').length;
+
+      toast.success(
+        res.message || `Attendance for ${selectedDate} saved! (${pCount} Present, ${aCount} Absent)`
+      );
       await loadRoster();
+      if (isStudent || activeTab === 'my_attendance') {
+        fetchMyAttendance();
+      }
     } catch (err) {
       toast.error(err.response?.data?.message || err.message || 'Failed to submit attendance');
     } finally {
@@ -329,7 +353,24 @@ const AttendancePage = () => {
                 </div>
 
                 <div className="form-group">
-                  <label>Date</label>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
+                    <label style={{ margin: 0 }}>Attendance Date</label>
+                    <button
+                      type="button"
+                      style={{
+                        background: 'none',
+                        border: 'none',
+                        color: 'var(--primary)',
+                        fontSize: '11px',
+                        cursor: 'pointer',
+                        padding: 0,
+                        fontWeight: 600,
+                      }}
+                      onClick={() => setSelectedDate(getTodayDateString())}
+                    >
+                      📅 Set to Today ({getTodayDateString()})
+                    </button>
+                  </div>
                   <input
                     type="date"
                     className="form-control"
@@ -341,32 +382,107 @@ const AttendancePage = () => {
             </div>
 
             <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
-              <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--border-color)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
+              <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--border-color)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '14px' }}>
                 <div>
-                  <h3 style={{ fontSize: '15px', fontWeight: 600, margin: 0 }}>
-                    Roll Sheet ({roster.length} Students)
-                  </h3>
-                  <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
-                    Date: {selectedDate}
-                  </span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+                    <h3 style={{ fontSize: '16px', fontWeight: 700, margin: 0 }}>
+                      Roll Sheet ({roster.length} Enrolled Students)
+                    </h3>
+                    {isDateAlreadyMarked ? (
+                      <span style={{ fontSize: '11px', fontWeight: 700, padding: '3px 10px', borderRadius: '9999px', background: 'rgba(56, 189, 248, 0.15)', color: '#38bdf8', border: '1px solid rgba(56, 189, 248, 0.35)' }}>
+                        🔄 Editing Session ({selectedDate})
+                      </span>
+                    ) : (
+                      <span style={{ fontSize: '11px', fontWeight: 700, padding: '3px 10px', borderRadius: '9999px', background: 'rgba(16, 185, 129, 0.15)', color: '#34d399', border: '1px solid rgba(16, 185, 129, 0.35)' }}>
+                        ✨ New Class Session ({selectedDate}) &mdash; Increases Class Count
+                      </span>
+                    )}
+                  </div>
+                  <p style={{ fontSize: '12.5px', color: 'var(--text-muted)', margin: '4px 0 0' }}>
+                    Click <strong>Present</strong> or <strong>Absent</strong> for each student individually, or use the quick buttons.
+                  </p>
                 </div>
 
                 {roster.length > 0 && (
-                  <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                    <span style={{ fontSize: '12px', color: 'var(--text-muted)', marginRight: '4px' }}>Batch actions:</span>
-                    <button className="btn btn-sm btn-outline" onClick={() => setAllStatus('Present')}>
-                      All Present
+                  <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
+                    <button
+                      type="button"
+                      className="btn btn-sm"
+                      style={{
+                        background: 'rgba(16, 185, 129, 0.15)',
+                        color: '#34d399',
+                        border: '1px solid rgba(16, 185, 129, 0.4)',
+                        fontWeight: 600,
+                      }}
+                      onClick={() => setAllStatus('Present')}
+                    >
+                      ✓ Mark All Present ({roster.length})
                     </button>
-                    <button className="btn btn-sm btn-outline" onClick={() => setAllStatus('Absent')}>
-                      All Absent
+                    <button
+                      type="button"
+                      className="btn btn-sm"
+                      style={{
+                        background: 'rgba(239, 68, 68, 0.15)',
+                        color: '#f87171',
+                        border: '1px solid rgba(239, 68, 68, 0.4)',
+                        fontWeight: 600,
+                      }}
+                      onClick={() => setAllStatus('Absent')}
+                    >
+                      ✕ Mark All Absent ({roster.length})
                     </button>
                   </div>
                 )}
               </div>
 
+              {roster.length > 0 && (
+                <div
+                  style={{
+                    padding: '12px 20px',
+                    background: 'rgba(15, 23, 42, 0.5)',
+                    borderBottom: '1px solid var(--border-color)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    flexWrap: 'wrap',
+                    gap: '12px',
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '18px', flexWrap: 'wrap' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Enrolled:</span>
+                      <strong style={{ fontSize: '14px', color: 'var(--text-main)' }}>{roster.length}</strong>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'var(--success)' }}></span>
+                      <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Present:</span>
+                      <strong style={{ fontSize: '14px', color: 'var(--success)' }}>
+                        {roster.filter((r) => r.status === 'Present').length}
+                      </strong>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'var(--danger)' }}></span>
+                      <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Absent:</span>
+                      <strong style={{ fontSize: '14px', color: 'var(--danger)' }}>
+                        {roster.filter((r) => r.status === 'Absent').length}
+                      </strong>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Session Present Rate:</span>
+                      <strong style={{ fontSize: '14px', color: (roster.length > 0 && (roster.filter((r) => r.status === 'Present').length / roster.length) >= 0.75) ? 'var(--success)' : 'var(--warning)' }}>
+                        {roster.length > 0 ? Math.round((roster.filter((r) => r.status === 'Present').length / roster.length) * 100) : 0}%
+                      </strong>
+                    </div>
+                  </div>
+                  <div style={{ fontSize: '11.5px', color: 'var(--text-muted)' }}>
+                    Target Session: <strong style={{ color: 'var(--text-main)' }}>{selectedDate}</strong>
+                  </div>
+                </div>
+              )}
+
               {loadingRoster ? (
                 <div style={{ padding: '20px' }}>
-                  <SkeletonTable rows={5} columns={4} />
+                  <SkeletonTable rows={5} columns={5} />
                 </div>
               ) : roster.length === 0 ? (
                 <EmptyState
@@ -379,33 +495,78 @@ const AttendancePage = () => {
                   <table className="data-table">
                     <thead>
                       <tr>
+                        <th style={{ width: '50px' }}>#</th>
                         <th>Roll Number</th>
                         <th>Student Name</th>
                         <th>Department</th>
-                        <th style={{ textAlign: 'center' }}>Attendance Status</th>
+                        <th style={{ textAlign: 'center', width: '130px' }}>Current Status</th>
+                        <th style={{ textAlign: 'center', width: '220px' }}>Mark Attendance</th>
                       </tr>
                     </thead>
                     <tbody>
-                      {roster.map((stu) => (
-                        <tr key={stu.studentId}>
+                      {roster.map((stu, idx) => (
+                        <tr key={stu.studentId} style={{ backgroundColor: stu.status === 'Absent' ? 'rgba(239, 68, 68, 0.04)' : 'transparent' }}>
+                          <td style={{ color: 'var(--text-muted)', fontSize: '12px' }}>{idx + 1}</td>
                           <td style={{ fontWeight: 600 }}>{stu.code}</td>
-                          <td style={{ fontWeight: 500 }}>{stu.name}</td>
+                          <td style={{ fontWeight: 600, color: 'var(--text-main)' }}>{stu.name}</td>
                           <td style={{ fontSize: '12px', color: 'var(--text-muted)' }}>{stu.department}</td>
                           <td style={{ textAlign: 'center' }}>
-                            <div style={{ display: 'inline-flex', gap: '6px' }}>
+                            {stu.status === 'Present' ? (
+                              <span className="status-badge connected" style={{ fontSize: '12px', padding: '3px 10px' }}>
+                                <span className="status-dot"></span>Present
+                              </span>
+                            ) : (
+                              <span className="status-badge disconnected" style={{ fontSize: '12px', padding: '3px 10px' }}>
+                                <span className="status-dot"></span>Absent
+                              </span>
+                            )}
+                          </td>
+                          <td style={{ textAlign: 'center' }}>
+                            <div
+                              style={{
+                                display: 'inline-flex',
+                                background: 'var(--bg-input, #0f172a)',
+                                padding: '3px',
+                                borderRadius: '8px',
+                                border: '1px solid var(--border-color)',
+                                gap: '4px',
+                              }}
+                            >
                               <button
                                 type="button"
-                                className={`btn-att att-present ${stu.status === 'Present' ? 'active' : ''}`}
+                                style={{
+                                  padding: '7px 16px',
+                                  fontSize: '12px',
+                                  fontWeight: 700,
+                                  borderRadius: '6px',
+                                  border: 'none',
+                                  cursor: 'pointer',
+                                  transition: 'all 0.15s ease',
+                                  background: stu.status === 'Present' ? 'var(--success)' : 'transparent',
+                                  color: stu.status === 'Present' ? '#ffffff' : 'var(--text-muted)',
+                                  boxShadow: stu.status === 'Present' ? '0 2px 8px rgba(16, 185, 129, 0.45)' : 'none',
+                                }}
                                 onClick={() => setStudentStatus(stu.studentId, 'Present')}
                               >
-                                Present
+                                ✓ Present
                               </button>
                               <button
                                 type="button"
-                                className={`btn-att att-absent ${stu.status === 'Absent' ? 'active' : ''}`}
+                                style={{
+                                  padding: '7px 16px',
+                                  fontSize: '12px',
+                                  fontWeight: 700,
+                                  borderRadius: '6px',
+                                  border: 'none',
+                                  cursor: 'pointer',
+                                  transition: 'all 0.15s ease',
+                                  background: stu.status === 'Absent' ? 'var(--danger)' : 'transparent',
+                                  color: stu.status === 'Absent' ? '#ffffff' : 'var(--text-muted)',
+                                  boxShadow: stu.status === 'Absent' ? '0 2px 8px rgba(239, 68, 68, 0.45)' : 'none',
+                                }}
                                 onClick={() => setStudentStatus(stu.studentId, 'Absent')}
                               >
-                                Absent
+                                ✕ Absent
                               </button>
                             </div>
                           </td>
@@ -417,13 +578,23 @@ const AttendancePage = () => {
               )}
 
               {roster.length > 0 && (
-                <div style={{ padding: '16px 20px', borderTop: '1px solid var(--border-color)', display: 'flex', justifyContent: 'flex-end' }}>
+                <div style={{ padding: '16px 20px', borderTop: '1px solid var(--border-color)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '14px' }}>
+                  <div style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>
+                    Current Selection: <strong style={{ color: 'var(--success)' }}>{roster.filter((r) => r.status === 'Present').length} Present</strong>, <strong style={{ color: 'var(--danger)' }}>{roster.filter((r) => r.status === 'Absent').length} Absent</strong> ({roster.length} Total)
+                  </div>
                   <button
                     className="btn btn-primary"
+                    style={{ padding: '10px 24px', fontWeight: 700, fontSize: '14px', display: 'flex', alignItems: 'center', gap: '8px' }}
                     onClick={handleSaveAttendance}
                     disabled={submittingAttendance}
                   >
-                    {submittingAttendance ? 'Saving...' : 'Save Attendance'}
+                    {submittingAttendance ? (
+                      'Saving Attendance...'
+                    ) : (
+                      <>
+                        <span>💾</span> Save Attendance ({selectedDate})
+                      </>
+                    )}
                   </button>
                 </div>
               )}
