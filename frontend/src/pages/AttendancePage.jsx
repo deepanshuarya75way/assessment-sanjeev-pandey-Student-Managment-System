@@ -275,7 +275,7 @@ const AttendancePage = () => {
           </div>
 
           {!isStudent && (
-            <div className="tab-buttons" style={{ display: 'flex', gap: '8px', background: '#f1f5f9', padding: '4px', borderRadius: '8px' }}>
+            <div className="tab-buttons" style={{ display: 'flex', gap: '8px', background: 'var(--bg-input)', border: '1px solid var(--border-color)', padding: '4px', borderRadius: '8px' }}>
               <button
                 className={`btn btn-sm ${activeTab === 'mark' ? 'btn-primary' : 'btn-outline'}`}
                 onClick={() => setActiveTab('mark')}
@@ -656,21 +656,21 @@ const AttendancePage = () => {
                   </div>
 
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '12px', marginTop: '16px' }}>
-                    <div style={{ background: '#f8fafc', padding: '10px 14px', borderRadius: '6px' }}>
-                      <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>Total Classes</span>
-                      <div style={{ fontSize: '18px', fontWeight: 700 }}>{myStats.totalClasses}</div>
+                    <div style={{ background: 'var(--bg-card-hover)', border: '1px solid var(--border-color)', padding: '12px 16px', borderRadius: 'var(--radius-lg)' }}>
+                      <span style={{ fontSize: '11px', fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Total Classes</span>
+                      <div style={{ fontSize: '22px', fontWeight: 800, color: 'var(--text-main)', marginTop: '4px' }}>{myStats.totalClasses}</div>
                     </div>
-                    <div style={{ background: '#f8fafc', padding: '10px 14px', borderRadius: '6px' }}>
-                      <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>Present</span>
-                      <div style={{ fontSize: '18px', fontWeight: 700, color: 'var(--success)' }}>{myStats.presentCount}</div>
+                    <div style={{ background: 'var(--bg-card-hover)', border: '1px solid var(--border-color)', padding: '12px 16px', borderRadius: 'var(--radius-lg)' }}>
+                      <span style={{ fontSize: '11px', fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Present</span>
+                      <div style={{ fontSize: '22px', fontWeight: 800, color: 'var(--success)', marginTop: '4px' }}>{myStats.presentCount}</div>
                     </div>
-                    <div style={{ background: '#f8fafc', padding: '10px 14px', borderRadius: '6px' }}>
-                      <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>Late</span>
-                      <div style={{ fontSize: '18px', fontWeight: 700, color: 'var(--warning)' }}>{myStats.lateCount}</div>
+                    <div style={{ background: 'var(--bg-card-hover)', border: '1px solid var(--border-color)', padding: '12px 16px', borderRadius: 'var(--radius-lg)' }}>
+                      <span style={{ fontSize: '11px', fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Late</span>
+                      <div style={{ fontSize: '22px', fontWeight: 800, color: 'var(--warning)', marginTop: '4px' }}>{myStats.lateCount}</div>
                     </div>
-                    <div style={{ background: '#f8fafc', padding: '10px 14px', borderRadius: '6px' }}>
-                      <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>Absent</span>
-                      <div style={{ fontSize: '18px', fontWeight: 700, color: 'var(--danger)' }}>{myStats.absentCount}</div>
+                    <div style={{ background: 'var(--bg-card-hover)', border: '1px solid var(--border-color)', padding: '12px 16px', borderRadius: 'var(--radius-lg)' }}>
+                      <span style={{ fontSize: '11px', fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Absent</span>
+                      <div style={{ fontSize: '22px', fontWeight: 800, color: 'var(--danger)', marginTop: '4px' }}>{myStats.absentCount}</div>
                     </div>
                   </div>
                 </div>

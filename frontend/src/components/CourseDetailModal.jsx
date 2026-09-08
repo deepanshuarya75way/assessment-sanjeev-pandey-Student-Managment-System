@@ -86,10 +86,11 @@ const CourseDetailModal = ({ isOpen, onClose, course }) => {
                       gap: '6px',
                       padding: '4px 10px',
                       borderRadius: '9999px',
-                      backgroundColor: '#e0e7ff',
-                      color: '#3730a3',
+                      backgroundColor: 'var(--purple-light)',
+                      color: 'var(--purple)',
+                      border: '1px solid var(--purple-border)',
                       fontSize: '12px',
-                      fontWeight: 500,
+                      fontWeight: 600,
                     }}
                   >
                     Prof. {tch.firstName} {tch.lastName} ({tch.department})

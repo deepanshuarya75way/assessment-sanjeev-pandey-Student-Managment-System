@@ -95,24 +95,24 @@ const DashboardPage = () => {
   const getPriorityBadge = (priority) => {
     switch (priority) {
       case 'Urgent':
-        return { bg: '#fee2e2', color: '#991b1b', border: '#fca5a5' };
+        return { bg: 'rgba(239, 68, 68, 0.16)', color: '#f87171', border: 'rgba(239, 68, 68, 0.35)' };
       case 'High':
-        return { bg: '#fef3c7', color: '#92400e', border: '#fcd34d' };
+        return { bg: 'rgba(245, 158, 11, 0.16)', color: '#fbbf24', border: 'rgba(245, 158, 11, 0.35)' };
       default:
-        return { bg: '#f1f5f9', color: '#475569', border: '#cbd5e1' };
+        return { bg: 'rgba(59, 130, 246, 0.16)', color: '#60a5fa', border: 'rgba(59, 130, 246, 0.35)' };
     }
   };
 
   const getCategoryBadge = (category) => {
     switch (category) {
       case 'Exam':
-        return { bg: '#fdf2f8', color: '#9d174d' };
+        return { bg: 'rgba(244, 63, 94, 0.16)', color: '#fb7185', border: 'rgba(244, 63, 94, 0.35)' };
       case 'Academic':
-        return { bg: '#e0e7ff', color: '#3730a3' };
+        return { bg: 'rgba(99, 102, 241, 0.16)', color: '#a5b4fc', border: 'rgba(99, 102, 241, 0.35)' };
       case 'Event':
-        return { bg: '#f0fdf4', color: '#166534' };
+        return { bg: 'rgba(16, 185, 129, 0.16)', color: '#34d399', border: 'rgba(16, 185, 129, 0.35)' };
       default:
-        return { bg: '#f8fafc', color: '#475569' };
+        return { bg: 'var(--bg-badge)', color: 'var(--text-secondary)', border: 'var(--border-color)' };
     }
   };
 
@@ -145,7 +145,7 @@ const DashboardPage = () => {
         </div>
 
         {user?.role === 'ADMIN' && (
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: '#f1f5f9', padding: '4px', borderRadius: '8px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'var(--bg-input)', border: '1px solid var(--border-color)', padding: '4px', borderRadius: '8px' }}>
             <span style={{ fontSize: '11px', fontWeight: 600, color: 'var(--text-muted)', paddingLeft: '8px' }}>
               ROLE VIEW:
             </span>
@@ -227,8 +227,9 @@ const DashboardPage = () => {
                     fontWeight: 600,
                     padding: '3px 10px',
                     borderRadius: '9999px',
-                    backgroundColor: (dashboardData.attendanceOverview?.rate || 0) >= 75 ? '#dcfce7' : '#fee2e2',
-                    color: (dashboardData.attendanceOverview?.rate || 0) >= 75 ? '#166534' : '#991b1b',
+                    backgroundColor: (dashboardData.attendanceOverview?.rate || 0) >= 75 ? 'var(--success-light)' : 'var(--danger-light)',
+                    color: (dashboardData.attendanceOverview?.rate || 0) >= 75 ? 'var(--success)' : 'var(--danger)',
+                    border: (dashboardData.attendanceOverview?.rate || 0) >= 75 ? '1px solid var(--success-border)' : '1px solid var(--danger-border)',
                   }}
                 >
                   {(dashboardData.attendanceOverview?.rate || 0) >= 75 ? 'Good Attendance' : 'Low Attendance'}
@@ -374,9 +375,9 @@ const DashboardPage = () => {
                         alignItems: 'flex-start',
                         gap: '12px',
                         padding: '10px 12px',
-                        background: '#f8fafc',
-                        borderRadius: '6px',
-                        border: '1px solid #edf2f7',
+                        background: 'var(--bg-card-hover)',
+                        borderRadius: 'var(--radius-md)',
+                        border: '1px solid var(--border-color)',
                       }}
                     >
                       <div
@@ -385,11 +386,11 @@ const DashboardPage = () => {
                           height: '28px',
                           borderRadius: '50%',
                           backgroundColor:
-                            act.type === 'STUDENT_ENROLLED' ? '#dcfce7' :
-                            act.type === 'MARKS_PUBLISHED' ? '#e0e7ff' : '#fef3c7',
+                            act.type === 'STUDENT_ENROLLED' ? 'rgba(16, 185, 129, 0.16)' :
+                            act.type === 'MARKS_PUBLISHED' ? 'rgba(99, 102, 241, 0.16)' : 'rgba(245, 158, 11, 0.16)',
                           color:
-                            act.type === 'STUDENT_ENROLLED' ? '#166534' :
-                            act.type === 'MARKS_PUBLISHED' ? '#3730a3' : '#92400e',
+                            act.type === 'STUDENT_ENROLLED' ? 'var(--success)' :
+                            act.type === 'MARKS_PUBLISHED' ? 'var(--primary-hover)' : 'var(--warning)',
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
@@ -451,9 +452,9 @@ const DashboardPage = () => {
                       key={item._id}
                       style={{
                         padding: '16px',
-                        background: '#ffffff',
+                        background: 'var(--bg-card-hover)',
                         border: '1px solid var(--border-color)',
-                        borderRadius: '8px',
+                        borderRadius: 'var(--radius-lg)',
                         display: 'flex',
                         flexDirection: 'column',
                         justifyContent: 'space-between',
@@ -498,7 +499,7 @@ const DashboardPage = () => {
                         </p>
                       </div>
 
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '10px', borderTop: '1px solid #f1f5f9', fontSize: '11px', color: 'var(--text-muted)' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '10px', borderTop: '1px solid var(--border-color)', fontSize: '11px', color: 'var(--text-muted)' }}>
                         <span>Target: <strong>{item.targetAudience || item.targetRole}</strong> &bull; {new Date(item.publishDate || item.createdAt).toLocaleDateString()}</span>
                         <div style={{ display: 'flex', gap: '8px' }}>
                           <button
@@ -673,13 +674,13 @@ const DashboardPage = () => {
                       key={c._id}
                       style={{
                         padding: '14px',
-                        background: '#f8fafc',
-                        borderRadius: '6px',
-                        border: '1px solid #edf2f7',
+                        background: 'var(--bg-card-hover)',
+                        borderRadius: 'var(--radius-lg)',
+                        border: '1px solid var(--border-color)',
                       }}
                     >
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
-                        <span style={{ fontWeight: 600, fontSize: '14px' }}>{c.courseName}</span>
+                        <span style={{ fontWeight: 700, fontSize: '14px', color: 'var(--text-main)' }}>{c.courseName}</span>
                         <span className="badge badge-info" style={{ fontSize: '11px' }}>{c.courseCode}</span>
                       </div>
                       <div style={{ fontSize: '12px', color: 'var(--text-muted)', marginBottom: '8px' }}>
@@ -694,8 +695,9 @@ const DashboardPage = () => {
                                 fontSize: '11px',
                                 padding: '2px 8px',
                                 borderRadius: '4px',
-                                background: '#e2e8f0',
-                                color: '#334155',
+                                background: 'var(--bg-badge)',
+                                color: 'var(--text-secondary)',
+                                border: '1px solid var(--border-color)',
                               }}
                             >
                               {s.code}: {s.name}
@@ -770,9 +772,9 @@ const DashboardPage = () => {
               <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginTop: '8px' }}>
                 {dashboardData.announcements && dashboardData.announcements.length > 0 ? (
                   dashboardData.announcements.map((item) => (
-                    <div key={item._id} style={{ padding: '12px', background: '#f8fafc', borderRadius: '6px', border: item.isRead === false ? '1.5px solid #3b82f6' : '1px solid #edf2f7' }}>
+                    <div key={item._id} style={{ padding: '12px', background: 'var(--bg-card-hover)', borderRadius: 'var(--radius-md)', border: item.isRead === false ? '1.5px solid var(--primary)' : '1px solid var(--border-color)' }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
-                        <span style={{ fontWeight: 600, fontSize: '13px' }}>{item.title}</span>
+                        <span style={{ fontWeight: 700, fontSize: '13px', color: 'var(--text-main)' }}>{item.title}</span>
                         <span style={{ fontSize: '11px', fontWeight: 600, color: item.priority === 'Urgent' ? 'var(--danger)' : 'var(--primary)' }}>
                           {item.priority}
                         </span>
@@ -809,10 +811,10 @@ const DashboardPage = () => {
               <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '8px' }}>
                 {dashboardData.recentActivity && dashboardData.recentActivity.length > 0 ? (
                   dashboardData.recentActivity.map((act, idx) => (
-                    <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '10px', background: '#f8fafc', borderRadius: '6px' }}>
+                    <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '10px 14px', background: 'var(--bg-card-hover)', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)' }}>
                       <span style={{ fontSize: '16px' }}>{act.type === 'ATTENDANCE_RECORDED' ? '📅' : '📝'}</span>
                       <div style={{ flex: 1 }}>
-                        <div style={{ fontSize: '13px', fontWeight: 600 }}>{act.title}</div>
+                        <div style={{ fontSize: '13px', fontWeight: 700, color: 'var(--text-main)' }}>{act.title}</div>
                         <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>{act.description}</div>
                       </div>
                       <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>
@@ -913,14 +915,23 @@ const DashboardPage = () => {
           </div>
 
           {(dashboardData.metrics?.attendanceRate || 0) < 75 && (
-            <div className="card" style={{ backgroundColor: '#fff7ed', borderColor: '#ffedd5', padding: '16px 20px', marginBottom: '24px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <div
+              className="card"
+              style={{
+                backgroundColor: 'rgba(239, 68, 68, 0.12)',
+                borderColor: 'rgba(239, 68, 68, 0.38)',
+                borderLeft: '4px solid var(--danger)',
+                padding: '16px 20px',
+                marginBottom: '24px',
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
                 <span style={{ fontSize: '24px' }}>⚠️</span>
                 <div>
-                  <h4 style={{ margin: 0, color: '#9a3412', fontSize: '14px', fontWeight: 600 }}>
+                  <h4 style={{ margin: 0, color: '#fca5a5', fontSize: '15px', fontWeight: 700 }}>
                     Attendance Shortage Notice: Below 75% Threshold ({dashboardData.metrics?.attendanceRate || 0}%)
                   </h4>
-                  <p style={{ margin: '4px 0 0', color: '#c2410c', fontSize: '13px' }}>
+                  <p style={{ margin: '4px 0 0', color: 'var(--text-secondary)', fontSize: '13px' }}>
                     College rules require a minimum 75% attendance to be eligible for exams. Please contact your faculty advisor.
                   </p>
                 </div>
@@ -1055,19 +1066,19 @@ const DashboardPage = () => {
                 dashboardData.announcements.map((item) => {
                   const pStyle = getPriorityBadge(item.priority);
                   return (
-                    <div key={item._id} style={{ padding: '14px', background: '#f8fafc', borderRadius: '8px', border: item.isRead === false ? '1.5px solid #3b82f6' : '1px solid #edf2f7' }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
-                        <span style={{ fontSize: '11px', fontWeight: 600, padding: '2px 8px', borderRadius: '4px', background: '#e0e7ff', color: '#3730a3' }}>
+                    <div key={item._id} style={{ padding: '16px', background: 'var(--bg-card-hover)', borderRadius: 'var(--radius-lg)', border: item.isRead === false ? '1.5px solid var(--primary)' : '1px solid var(--border-color)' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                        <span style={{ fontSize: '11px', fontWeight: 600, padding: '2px 8px', borderRadius: '4px', background: 'var(--bg-badge)', color: 'var(--text-secondary)', border: '1px solid var(--border-color)' }}>
                           {item.category}
                         </span>
                         <span style={{ fontSize: '11px', fontWeight: 600, padding: '2px 8px', borderRadius: '9999px', backgroundColor: pStyle.bg, color: pStyle.color, border: `1px solid ${pStyle.border}` }}>
                           {item.priority}
                         </span>
                       </div>
-                      <h4 style={{ fontSize: '14px', fontWeight: 600, color: 'var(--text-main)', marginBottom: '4px' }}>
+                      <h4 style={{ fontSize: '15px', fontWeight: 700, color: 'var(--text-main)', marginBottom: '4px' }}>
                         {item.title}
                       </h4>
-                      <p style={{ fontSize: '12px', color: 'var(--text-muted)', lineHeight: 1.4, margin: '4px 0 8px' }}>
+                      <p style={{ fontSize: '13px', color: 'var(--text-secondary)', lineHeight: 1.45, margin: '4px 0 8px' }}>
                         {item.description || item.content}
                       </p>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '11px', color: '#94a3b8' }}>

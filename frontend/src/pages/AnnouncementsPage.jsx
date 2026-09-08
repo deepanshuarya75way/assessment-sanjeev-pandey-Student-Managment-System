@@ -161,11 +161,11 @@ const AnnouncementsPage = () => {
   const getPriorityBadge = (p) => {
     switch (p) {
       case 'Urgent':
-        return <span className="status-badge disconnected" style={{ backgroundColor: '#fee2e2', color: '#b91c1c', border: '1px solid #fca5a5' }}><span className="status-dot" style={{ backgroundColor: '#ef4444' }}></span>Urgent</span>;
+        return <span className="status-badge disconnected" style={{ backgroundColor: 'var(--danger-light)', color: 'var(--danger)', border: '1px solid var(--danger-border)' }}><span className="status-dot" style={{ backgroundColor: 'var(--danger)' }}></span>Urgent</span>;
       case 'High':
-        return <span className="status-badge" style={{ backgroundColor: '#fef3c7', color: '#b45309', border: '1px solid #fcd34d' }}><span className="status-dot" style={{ backgroundColor: '#f59e0b' }}></span>High</span>;
+        return <span className="status-badge" style={{ backgroundColor: 'var(--warning-light)', color: 'var(--warning)', border: '1px solid var(--warning-border)' }}><span className="status-dot" style={{ backgroundColor: 'var(--warning)' }}></span>High</span>;
       default:
-        return <span className="status-badge" style={{ backgroundColor: '#e0f2fe', color: '#0369a1', border: '1px solid #bae6fd' }}><span className="status-dot" style={{ backgroundColor: '#0ea5e9' }}></span>Normal</span>;
+        return <span className="status-badge" style={{ backgroundColor: 'var(--info-light)', color: 'var(--info)', border: '1px solid var(--info-border)' }}><span className="status-dot" style={{ backgroundColor: 'var(--info)' }}></span>Normal</span>;
     }
   };
 
@@ -174,7 +174,7 @@ const AnnouncementsPage = () => {
       case 'Published':
         return <span className="status-badge connected"><span className="status-dot"></span>Published</span>;
       case 'Draft':
-        return <span className="status-badge" style={{ backgroundColor: '#fef9c3', color: '#854d0e', border: '1px solid #fde047' }}><span className="status-dot" style={{ backgroundColor: '#eab308' }}></span>Draft</span>;
+        return <span className="status-badge" style={{ backgroundColor: 'var(--warning-light)', color: 'var(--warning)', border: '1px solid var(--warning-border)' }}><span className="status-dot" style={{ backgroundColor: 'var(--warning)' }}></span>Draft</span>;
       default:
         return <span className="status-badge disconnected"><span className="status-dot"></span>Archived</span>;
     }
@@ -335,21 +335,21 @@ const AnnouncementsPage = () => {
                   key={item._id}
                   className="card announcement-card"
                   style={{
-                    backgroundColor: 'var(--card-bg, #ffffff)',
-                    border: isUnread ? '1.5px solid #3b82f6' : '1px solid var(--border-color, #e2e8f0)',
-                    borderRadius: '10px',
-                    padding: '20px',
-                    boxShadow: isUnread ? '0 4px 12px rgba(59, 130, 246, 0.08)' : '0 1px 3px rgba(0,0,0,0.05)',
+                    backgroundColor: 'var(--bg-card)',
+                    border: isUnread ? '1.5px solid var(--primary)' : '1px solid var(--border-color)',
+                    borderRadius: 'var(--radius-xl)',
+                    padding: '22px',
+                    boxShadow: isUnread ? '0 4px 16px rgba(59, 130, 246, 0.2)' : 'var(--shadow-sm)',
                     position: 'relative',
                     transition: 'all 0.2s ease',
                   }}
                 >
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px', flexWrap: 'wrap', gap: '8px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px', flexWrap: 'wrap', gap: '8px' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-                      <span className="badge" style={{ backgroundColor: '#f1f5f9', color: '#334155', fontWeight: 600, fontSize: '0.75rem', padding: '3px 8px', borderRadius: '4px' }}>
+                      <span className="badge" style={{ backgroundColor: 'var(--bg-badge)', color: 'var(--text-secondary)', border: '1px solid var(--border-color)', fontWeight: 600, fontSize: '0.75rem', padding: '3px 8px', borderRadius: '4px' }}>
                         {item.category || 'General'}
                       </span>
-                      <span className="badge" style={{ backgroundColor: '#ede9fe', color: '#6d28d9', fontWeight: 600, fontSize: '0.75rem', padding: '3px 8px', borderRadius: '4px' }}>
+                      <span className="badge" style={{ backgroundColor: 'var(--purple-light)', color: 'var(--purple)', border: '1px solid var(--purple-border)', fontWeight: 600, fontSize: '0.75rem', padding: '3px 8px', borderRadius: '4px' }}>
                         Target: {item.targetAudience || 'Everyone'}
                       </span>
                       {getPriorityBadge(item.priority)}
@@ -357,33 +357,33 @@ const AnnouncementsPage = () => {
                     </div>
 
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                      <span style={{ fontSize: '0.8rem', color: '#64748b' }}>
+                      <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
                         📅 {pubDate} {expDate ? `• Expires: ${expDate}` : ''}
                       </span>
                       {isUnread ? (
-                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '0.75rem', fontWeight: 700, color: '#2563eb', backgroundColor: '#dbeafe', padding: '2px 8px', borderRadius: '12px' }}>
-                          <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: '#2563eb' }}></span>
+                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '0.75rem', fontWeight: 700, color: 'var(--primary-hover)', backgroundColor: 'var(--primary-light)', border: '1px solid rgba(59, 130, 246, 0.35)', padding: '2px 8px', borderRadius: '12px' }}>
+                          <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: 'var(--primary)' }}></span>
                           Unread
                         </span>
                       ) : (
-                        <span style={{ fontSize: '0.75rem', color: '#94a3b8' }}>
+                        <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
                           ✓ Read
                         </span>
                       )}
                     </div>
                   </div>
 
-                  <h3 style={{ fontSize: '1.2rem', fontWeight: 700, color: 'var(--text-primary, #0f172a)', margin: '0 0 10px 0' }}>
+                  <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--text-main)', margin: '0 0 10px 0', letterSpacing: '-0.01em' }}>
                     {item.title}
                   </h3>
 
-                  <p style={{ fontSize: '0.95rem', color: 'var(--text-secondary, #334155)', lineHeight: 1.6, margin: '0 0 16px 0', whiteSpace: 'pre-line' }}>
+                  <p style={{ fontSize: '0.95rem', color: 'var(--text-secondary)', lineHeight: 1.6, margin: '0 0 16px 0', whiteSpace: 'pre-line' }}>
                     {item.description || item.content}
                   </p>
 
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '12px', borderTop: '1px solid var(--border-color, #f1f5f9)', flexWrap: 'wrap', gap: '10px' }}>
-                    <span style={{ fontSize: '0.82rem', color: '#64748b', fontStyle: 'italic' }}>
-                      Issued by: <strong>{item.authorName || 'Campus Administration'}</strong>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '12px', borderTop: '1px solid var(--border-color)', flexWrap: 'wrap', gap: '10px' }}>
+                    <span style={{ fontSize: '0.82rem', color: 'var(--text-muted)', fontStyle: 'italic' }}>
+                      Issued by: <strong style={{ color: 'var(--text-primary)' }}>{item.authorName || 'Campus Administration'}</strong>
                     </span>
 
                     <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>

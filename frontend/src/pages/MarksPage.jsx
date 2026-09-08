@@ -206,7 +206,7 @@ const MarksPage = () => {
 
           <div style={{ display: 'flex', gap: '8px' }}>
             {!isStudent && (
-              <div className="tab-buttons" style={{ display: 'flex', gap: '8px', background: '#f1f5f9', padding: '4px', borderRadius: '8px' }}>
+              <div className="tab-buttons" style={{ display: 'flex', gap: '8px', background: 'var(--bg-input)', border: '1px solid var(--border-color)', padding: '4px', borderRadius: '8px' }}>
                 <button
                   className={`btn btn-sm ${activeTab === 'registry' ? 'btn-primary' : 'btn-outline'}`}
                   onClick={() => setActiveTab('registry')}

@@ -12,13 +12,13 @@ const StatCard = ({
   const getBadgeStyle = () => {
     switch (badgeType) {
       case 'success':
-        return { bg: '#dcfce7', color: '#166534', border: '#86efac' };
+        return { bg: 'rgba(16, 185, 129, 0.16)', color: '#34d399', border: 'rgba(16, 185, 129, 0.35)' };
       case 'warning':
-        return { bg: '#fef3c7', color: '#92400e', border: '#fcd34d' };
+        return { bg: 'rgba(245, 158, 11, 0.16)', color: '#fbbf24', border: 'rgba(245, 158, 11, 0.35)' };
       case 'danger':
-        return { bg: '#fee2e2', color: '#991b1b', border: '#fca5a5' };
+        return { bg: 'rgba(239, 68, 68, 0.16)', color: '#f87171', border: 'rgba(239, 68, 68, 0.35)' };
       default:
-        return { bg: '#eff6ff', color: '#1e40af', border: '#bfdbfe' };
+        return { bg: 'rgba(59, 130, 246, 0.16)', color: '#60a5fa', border: 'rgba(59, 130, 246, 0.35)' };
     }
   };
 
@@ -29,13 +29,13 @@ const StatCard = ({
       className="dashboard-stat-card"
       onClick={onClick}
       style={{
-        background: '#ffffff',
+        background: 'var(--bg-card)',
         border: '1px solid var(--border-color)',
-        borderRadius: 'var(--radius-md)',
-        padding: '20px',
+        borderRadius: 'var(--radius-xl)',
+        padding: '22px',
         display: 'flex',
         flexDirection: 'column',
-        gap: '12px',
+        gap: '14px',
         cursor: onClick ? 'pointer' : 'default',
         transition: 'all 0.2s ease',
         boxShadow: 'var(--shadow-sm)',

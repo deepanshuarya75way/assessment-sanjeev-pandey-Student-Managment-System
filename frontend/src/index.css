@@ -46,6 +46,7 @@
   --bg-sidebar: #111a2a;
   --bg-header: #111a2a;
   --bg-card: #151f32;
+  --card-bg: #151f32;
   --bg-card-hover: #1a273e;
   --bg-card-elevated: #1c2a44;
   --bg-input: #101828;
@@ -54,6 +55,7 @@
   --bg-badge: #1a273e;
   --bg-table-stripe: #121a2b;
   --bg-table-hover: #1c2941;
+  --card-border: #22324b;
 
   /* High-Contrast Typography */
   --text-main: #ffffff;
