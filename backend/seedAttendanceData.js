@@ -33,7 +33,7 @@ const seed = async () => {
     ];
 
     const records = [];
-    const statuses = ['Present', 'Present', 'Present', 'Late', 'Absent'];
+    const statuses = ['Present', 'Present', 'Present', 'Present', 'Absent'];
 
     for (const dateString of dates) {
       for (const sub of subjects) {
@@ -48,7 +48,7 @@ const seed = async () => {
             date: new Date(dateString),
             dateString,
             status,
-            remarks: status === 'Late' ? 'Late entry by 15 mins' : '',
+            remarks: '',
           });
         }
       }

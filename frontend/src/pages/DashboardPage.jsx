@@ -244,7 +244,6 @@ const DashboardPage = () => {
                   centerLabel="Present Rate"
                   data={[
                     { label: 'Present', value: dashboardData.attendanceOverview?.presentCount || 0, color: '#10b981' },
-                    { label: 'Late', value: dashboardData.attendanceOverview?.lateCount || 0, color: '#f59e0b' },
                     { label: 'Absent', value: dashboardData.attendanceOverview?.absentCount || 0, color: '#ef4444' },
                   ]}
                 />
@@ -267,18 +266,12 @@ const DashboardPage = () => {
                 </div>
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px', paddingTop: '12px', borderTop: '1px solid var(--border-color)' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '10px', paddingTop: '12px', borderTop: '1px solid var(--border-color)' }}>
                 <div style={{ textAlign: 'center', padding: '8px', background: 'var(--bg-card-hover)', borderRadius: '6px' }}>
                   <div style={{ fontSize: '18px', fontWeight: 700, color: 'var(--success)' }}>
                     {dashboardData.attendanceOverview?.presentCount || 0}
                   </div>
                   <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>Present</div>
-                </div>
-                <div style={{ textAlign: 'center', padding: '8px', background: 'var(--bg-card-hover)', borderRadius: '6px' }}>
-                  <div style={{ fontSize: '18px', fontWeight: 700, color: 'var(--warning)' }}>
-                    {dashboardData.attendanceOverview?.lateCount || 0}
-                  </div>
-                  <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>Late</div>
                 </div>
                 <div style={{ textAlign: 'center', padding: '8px', background: 'var(--bg-card-hover)', borderRadius: '6px' }}>
                   <div style={{ fontSize: '18px', fontWeight: 700, color: 'var(--danger)' }}>
@@ -638,7 +631,6 @@ const DashboardPage = () => {
                   centerLabel="Roll Count"
                   data={[
                     { label: 'Present', value: dashboardData.todayAttendance.present || 0, color: '#10b981' },
-                    { label: 'Late', value: dashboardData.todayAttendance.late || 0, color: '#f59e0b' },
                     { label: 'Absent', value: dashboardData.todayAttendance.absent || 0, color: '#ef4444' },
                   ]}
                 />
@@ -646,10 +638,6 @@ const DashboardPage = () => {
                   <div style={{ textAlign: 'center', padding: '12px 20px', background: 'var(--bg-card-hover)', borderRadius: '8px', border: '1px solid var(--border-subtle)' }}>
                     <div style={{ fontSize: '22px', fontWeight: 700, color: 'var(--success)' }}>{dashboardData.todayAttendance.present}</div>
                     <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Present</div>
-                  </div>
-                  <div style={{ textAlign: 'center', padding: '12px 20px', background: 'var(--bg-card-hover)', borderRadius: '8px', border: '1px solid var(--border-subtle)' }}>
-                    <div style={{ fontSize: '22px', fontWeight: 700, color: 'var(--warning)' }}>{dashboardData.todayAttendance.late}</div>
-                    <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Late</div>
                   </div>
                   <div style={{ textAlign: 'center', padding: '12px 20px', background: 'var(--bg-card-hover)', borderRadius: '8px', border: '1px solid var(--border-subtle)' }}>
                     <div style={{ fontSize: '22px', fontWeight: 700, color: 'var(--danger)' }}>{dashboardData.todayAttendance.absent}</div>
@@ -917,9 +905,7 @@ const DashboardPage = () => {
           {(dashboardData.metrics?.attendanceRate || 0) < 75 && (() => {
             const tot = dashboardData.metrics?.totalClasses || 0;
             const pres = dashboardData.metrics?.presentCount ?? dashboardData.metrics?.totalPresent ?? 0;
-            const late = dashboardData.metrics?.lateCount ?? dashboardData.metrics?.totalLate ?? 0;
-            const effAttended = pres + (late * 0.5);
-            const moreNeeded = Math.max(0, Math.ceil(3 * tot - 4 * effAttended));
+            const moreNeeded = Math.max(0, Math.ceil(3 * tot - 4 * pres));
 
             return (
               <div
@@ -995,7 +981,7 @@ const DashboardPage = () => {
                           Classes Attended
                         </span>
                         <div style={{ fontSize: '22px', fontWeight: 800, color: '#38bdf8', marginTop: '3px' }}>
-                          {pres} <span style={{ fontSize: '12px', fontWeight: 500, color: 'var(--text-muted)' }}>{late > 0 ? `(${pres} Present, ${late} Late)` : 'Present'}</span>
+                          {pres} <span style={{ fontSize: '12px', fontWeight: 500, color: 'var(--text-muted)' }}>Present</span>
                         </div>
                       </div>
 
@@ -1103,14 +1089,12 @@ const DashboardPage = () => {
                   centerLabel="Present Rate"
                   data={[
                     { label: 'Present', value: dashboardData.metrics?.presentCount || 0, color: '#10b981' },
-                    { label: 'Late', value: dashboardData.metrics?.lateCount || 0, color: '#f59e0b' },
                     { label: 'Absent', value: dashboardData.metrics?.absentCount || 0, color: '#ef4444' },
                   ]}
                 />
                 <div style={{ fontSize: '12px', color: 'var(--text-muted)', lineHeight: 1.8, minWidth: '130px' }}>
                   <div>Total Classes: <strong>{dashboardData.metrics?.totalClasses || 0}</strong></div>
                   <div><span style={{ color: 'var(--success)', fontWeight: 700 }}>●</span> Present: <strong>{dashboardData.metrics?.presentCount || 0}</strong></div>
-                  <div><span style={{ color: 'var(--warning)', fontWeight: 700 }}>●</span> Late: <strong>{dashboardData.metrics?.lateCount || 0}</strong></div>
                   <div><span style={{ color: 'var(--danger)', fontWeight: 700 }}>●</span> Absent: <strong>{dashboardData.metrics?.absentCount || 0}</strong></div>
                 </div>
               </div>
@@ -1134,9 +1118,7 @@ const DashboardPage = () => {
                             <span
                               className={`badge ${
                                 att.status === 'Present'
-                                   ? 'badge-success'
-                                  : att.status === 'Late'
-                                  ? 'badge-warning'
+                                  ? 'badge-success'
                                   : 'badge-inactive'
                               }`}
                             >

@@ -246,8 +246,6 @@ const AttendancePage = () => {
     switch (status) {
       case 'Present':
         return <span className="status-badge connected"><span className="status-dot"></span>Present</span>;
-      case 'Late':
-        return <span className="status-badge connecting"><span className="status-dot"></span>Late</span>;
       case 'Absent':
         return <span className="status-badge disconnected"><span className="status-dot"></span>Absent</span>;
       default:
@@ -404,13 +402,6 @@ const AttendancePage = () => {
                               </button>
                               <button
                                 type="button"
-                                className={`btn-att att-late ${stu.status === 'Late' ? 'active' : ''}`}
-                                onClick={() => setStudentStatus(stu.studentId, 'Late')}
-                              >
-                                Late
-                              </button>
-                              <button
-                                type="button"
                                 className={`btn-att att-absent ${stu.status === 'Absent' ? 'active' : ''}`}
                                 onClick={() => setStudentStatus(stu.studentId, 'Absent')}
                               >
@@ -461,9 +452,8 @@ const AttendancePage = () => {
                 <div className="card" style={{ marginBottom: 0, padding: '16px' }}>
                   <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Breakdown</span>
                   <div style={{ fontSize: '13px', fontWeight: 600, marginTop: '8px' }}>
-                    <span style={{ color: 'var(--success)' }}>{stats.presentCount} P</span> &bull;{' '}
-                    <span style={{ color: 'var(--warning)' }}>{stats.lateCount} L</span> &bull;{' '}
-                    <span style={{ color: 'var(--danger)' }}>{stats.absentCount} A</span>
+                    <span style={{ color: 'var(--success)' }}>{stats.presentCount} Present</span> &bull;{' '}
+                    <span style={{ color: 'var(--danger)' }}>{stats.absentCount} Absent</span>
                   </div>
                 </div>
               </div>
@@ -510,7 +500,6 @@ const AttendancePage = () => {
                 >
                   <option value="">All Statuses</option>
                   <option value="Present">Present</option>
-                  <option value="Late">Late</option>
                   <option value="Absent">Absent</option>
                 </select>
               </div>
@@ -655,7 +644,7 @@ const AttendancePage = () => {
                     </span>
                   </div>
 
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '12px', marginTop: '16px' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '12px', marginTop: '16px' }}>
                     <div style={{ background: 'var(--bg-card-hover)', border: '1px solid var(--border-color)', padding: '12px 16px', borderRadius: 'var(--radius-lg)' }}>
                       <span style={{ fontSize: '11px', fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Total Classes</span>
                       <div style={{ fontSize: '22px', fontWeight: 800, color: 'var(--text-main)', marginTop: '4px' }}>{myStats.totalClasses || 0}</div>
@@ -665,19 +654,13 @@ const AttendancePage = () => {
                       <div style={{ fontSize: '22px', fontWeight: 800, color: 'var(--success)', marginTop: '4px' }}>{myStats.presentCount ?? myStats.totalPresent ?? 0}</div>
                     </div>
                     <div style={{ background: 'var(--bg-card-hover)', border: '1px solid var(--border-color)', padding: '12px 16px', borderRadius: 'var(--radius-lg)' }}>
-                      <span style={{ fontSize: '11px', fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Late</span>
-                      <div style={{ fontSize: '22px', fontWeight: 800, color: 'var(--warning)', marginTop: '4px' }}>{myStats.lateCount ?? myStats.totalLate ?? 0}</div>
-                    </div>
-                    <div style={{ background: 'var(--bg-card-hover)', border: '1px solid var(--border-color)', padding: '12px 16px', borderRadius: 'var(--radius-lg)' }}>
                       <span style={{ fontSize: '11px', fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Absent</span>
                       <div style={{ fontSize: '22px', fontWeight: 800, color: 'var(--danger)', marginTop: '4px' }}>{myStats.absentCount ?? myStats.totalAbsent ?? 0}</div>
                     </div>
                     {(() => {
                       const tot = myStats.totalClasses || 0;
                       const pres = myStats.presentCount ?? myStats.totalPresent ?? 0;
-                      const late = myStats.lateCount ?? myStats.totalLate ?? 0;
-                      const effAttended = pres + (late * 0.5);
-                      const moreNeeded = Math.max(0, Math.ceil(3 * tot - 4 * effAttended));
+                      const moreNeeded = Math.max(0, Math.ceil(3 * tot - 4 * pres));
 
                       if (myStats.isLowAttendance || moreNeeded > 0) {
                         return (
@@ -710,9 +693,7 @@ const AttendancePage = () => {
                   {(() => {
                     const tot = myStats.totalClasses || 0;
                     const pres = myStats.presentCount ?? myStats.totalPresent ?? 0;
-                    const late = myStats.lateCount ?? myStats.totalLate ?? 0;
-                    const effAttended = pres + (late * 0.5);
-                    const moreNeeded = Math.max(0, Math.ceil(3 * tot - 4 * effAttended));
+                    const moreNeeded = Math.max(0, Math.ceil(3 * tot - 4 * pres));
                     if (moreNeeded > 0) {
                       return (
                         <div style={{ marginTop: '14px', padding: '10px 14px', borderRadius: '8px', background: 'rgba(239, 68, 68, 0.12)', border: '1px solid rgba(239, 68, 68, 0.25)', fontSize: '13px', color: '#fca5a5', display: 'flex', alignItems: 'center', gap: '8px' }}>

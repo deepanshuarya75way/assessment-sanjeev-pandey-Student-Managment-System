@@ -26,7 +26,7 @@ export const markBatchAttendance = async ({
   const dateString = dateObj.toISOString().split('T')[0];
 
   const operations = records.map((rec) => {
-    const validStatus = ['Present', 'Absent', 'Late'].includes(rec.status)
+    const validStatus = ['Present', 'Absent'].includes(rec.status)
       ? rec.status
       : 'Present';
 
@@ -151,7 +151,6 @@ export const getStudentAttendanceStats = async (studentId) => {
   let totalClasses = 0;
   let totalPresent = 0;
   let totalAbsent = 0;
-  let totalLate = 0;
 
   records.forEach((rec) => {
     const subId = rec.subject?._id?.toString() || 'unknown';
@@ -166,7 +165,6 @@ export const getStudentAttendanceStats = async (studentId) => {
         total: 0,
         present: 0,
         absent: 0,
-        late: 0,
       };
     }
 
@@ -176,9 +174,6 @@ export const getStudentAttendanceStats = async (studentId) => {
     if (rec.status === 'Present') {
       subjectStats[subId].present += 1;
       totalPresent += 1;
-    } else if (rec.status === 'Late') {
-      subjectStats[subId].late += 1;
-      totalLate += 1;
     } else {
       subjectStats[subId].absent += 1;
       totalAbsent += 1;
@@ -187,7 +182,7 @@ export const getStudentAttendanceStats = async (studentId) => {
 
   const subjectsList = Object.values(subjectStats).map((sub) => {
     const percentage = sub.total > 0
-      ? Math.round(((sub.present + sub.late * 0.5) / sub.total) * 100)
+      ? Math.round((sub.present / sub.total) * 100)
       : 0;
     return {
       ...sub,
@@ -197,16 +192,14 @@ export const getStudentAttendanceStats = async (studentId) => {
   });
 
   const overallPercentage = totalClasses > 0
-    ? Math.round(((totalPresent + totalLate * 0.5) / totalClasses) * 100)
+    ? Math.round((totalPresent / totalClasses) * 100)
     : 0;
 
   return {
     totalClasses,
     totalPresent,
     totalAbsent,
-    totalLate,
     presentCount: totalPresent,
-    lateCount: totalLate,
     absentCount: totalAbsent,
     overallPercentage,
     isLowAttendance: overallPercentage < 75,
@@ -222,11 +215,10 @@ export const getCourseSubjectStats = async (courseId, subjectId) => {
   const records = await Attendance.find(query);
   const totalRecords = records.length;
   const presentCount = records.filter((r) => r.status === 'Present').length;
-  const lateCount = records.filter((r) => r.status === 'Late').length;
   const absentCount = records.filter((r) => r.status === 'Absent').length;
 
   const percentage = totalRecords > 0
-    ? Math.round(((presentCount + lateCount * 0.5) / totalRecords) * 100)
+    ? Math.round((presentCount / totalRecords) * 100)
     : 0;
 
   const distinctDates = [...new Set(records.map((r) => r.dateString))].length;
@@ -235,7 +227,6 @@ export const getCourseSubjectStats = async (courseId, subjectId) => {
     totalRecords,
     sessionsConducted: distinctDates,
     presentCount,
-    lateCount,
     absentCount,
     percentage,
   };

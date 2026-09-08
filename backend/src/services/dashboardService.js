@@ -38,16 +38,14 @@ export const getAdminDashboardData = async () => {
   let totalAttendanceRecords = 0;
   let presentCount = 0;
   let absentCount = 0;
-  let lateCount = 0;
   attendanceAgg.forEach((item) => {
     totalAttendanceRecords += item.count;
     if (item._id === 'Present') presentCount = item.count;
     if (item._id === 'Absent') absentCount = item.count;
-    if (item._id === 'Late') lateCount = item.count;
   });
 
   const attendanceRate = totalAttendanceRecords > 0
-    ? Math.round(((presentCount + (lateCount * 0.5)) / totalAttendanceRecords) * 100)
+    ? Math.round((presentCount / totalAttendanceRecords) * 100)
     : 0;
 
   const recentStudents = await Student.find()
@@ -171,7 +169,6 @@ export const getTeacherDashboardData = async (userEmail) => {
 
   const todayPresent = todayAttendanceRecords.filter((r) => r.status === 'Present').length;
   const todayAbsent = todayAttendanceRecords.filter((r) => r.status === 'Absent').length;
-  const todayLate = todayAttendanceRecords.filter((r) => r.status === 'Late').length;
 
   const marksQuery = teacherId
     ? { teacher: teacherId }
@@ -225,7 +222,6 @@ export const getTeacherDashboardData = async (userEmail) => {
       total: todayAttendanceRecords.length,
       present: todayPresent,
       absent: todayAbsent,
-      late: todayLate,
       records: todayAttendanceRecords.slice(0, 5),
     },
     recentMarks,
@@ -264,12 +260,11 @@ export const getStudentDashboardData = async (userEmail) => {
   let absentCount = 0;
   attendanceRecords.forEach((att) => {
     if (att.status === 'Present') presentCount += 1;
-    else if (att.status === 'Late') lateCount += 1;
-    else if (att.status === 'Absent') absentCount += 1;
+    else absentCount += 1;
   });
   const totalClasses = attendanceRecords.length;
   const attendanceRate = totalClasses > 0
-    ? Math.round(((presentCount + (lateCount * 0.5)) / totalClasses) * 100)
+    ? Math.round((presentCount / totalClasses) * 100)
     : 0;
 
   const marks = await Marks.find({ student: student._id })
@@ -306,7 +301,6 @@ export const getStudentDashboardData = async (userEmail) => {
       totalClasses,
       presentCount,
       absentCount,
-      lateCount,
       cgpa,
       overallPercentage,
       subjectsGraded: marks.length,

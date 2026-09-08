@@ -68,7 +68,7 @@ const runTests = async () => {
       teacherId: teacher?._id,
       date: testDate,
       records: [
-        { studentId: student._id, status: 'Late', remarks: 'Arrived 10 mins late' },
+        { studentId: student._id, status: 'Absent', remarks: 'Absent on leave' },
       ],
     });
     console.log('PASS: Re-submitted attendance on same date.');
@@ -78,8 +78,8 @@ const runTests = async () => {
       subject: subject._id,
       dateString: testDate,
     });
-    if (allRecordsForDate.length === 1 && allRecordsForDate[0].status === 'Late') {
-      console.log('PASS: Duplicate strictly prevented! Exactly 1 record exists, updated to Late.');
+    if (allRecordsForDate.length === 1 && allRecordsForDate[0].status === 'Absent') {
+      console.log('PASS: Duplicate strictly prevented! Exactly 1 record exists, updated to Absent.');
     } else {
       throw new Error(`FAIL: Found ${allRecordsForDate.length} duplicate records!`);
     }
