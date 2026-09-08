@@ -914,30 +914,132 @@ const DashboardPage = () => {
             />
           </div>
 
-          {(dashboardData.metrics?.attendanceRate || 0) < 75 && (
-            <div
-              className="card"
-              style={{
-                backgroundColor: 'rgba(239, 68, 68, 0.12)',
-                borderColor: 'rgba(239, 68, 68, 0.38)',
-                borderLeft: '4px solid var(--danger)',
-                padding: '16px 20px',
-                marginBottom: '24px',
-              }}
-            >
-              <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-                <span style={{ fontSize: '24px' }}>⚠️</span>
-                <div>
-                  <h4 style={{ margin: 0, color: '#fca5a5', fontSize: '15px', fontWeight: 700 }}>
-                    Attendance Shortage Notice: Below 75% Threshold ({dashboardData.metrics?.attendanceRate || 0}%)
-                  </h4>
-                  <p style={{ margin: '4px 0 0', color: 'var(--text-secondary)', fontSize: '13px' }}>
-                    College rules require a minimum 75% attendance to be eligible for exams. Please contact your faculty advisor.
-                  </p>
+          {(dashboardData.metrics?.attendanceRate || 0) < 75 && (() => {
+            const tot = dashboardData.metrics?.totalClasses || 0;
+            const pres = dashboardData.metrics?.presentCount || 0;
+            const late = dashboardData.metrics?.lateCount || 0;
+            const effAttended = pres + (late * 0.5);
+            const moreNeeded = Math.max(0, Math.ceil(3 * tot - 4 * effAttended));
+
+            return (
+              <div
+                className="card"
+                style={{
+                  backgroundColor: 'rgba(239, 68, 68, 0.12)',
+                  borderColor: 'rgba(239, 68, 68, 0.38)',
+                  borderLeft: '4px solid var(--danger)',
+                  padding: '18px 22px',
+                  marginBottom: '24px',
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'flex-start', gap: '14px' }}>
+                  <span style={{ fontSize: '26px', lineHeight: 1 }}>⚠️</span>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
+                      <h4 style={{ margin: 0, color: '#fca5a5', fontSize: '15px', fontWeight: 800 }}>
+                        Attendance Shortage Notice: Below 75% Threshold ({dashboardData.metrics?.attendanceRate || 0}%)
+                      </h4>
+                      <span
+                        style={{
+                          fontSize: '11px',
+                          fontWeight: 700,
+                          backgroundColor: 'rgba(239, 68, 68, 0.25)',
+                          color: '#fca5a5',
+                          border: '1px solid rgba(239, 68, 68, 0.4)',
+                          padding: '2px 8px',
+                          borderRadius: '9999px',
+                        }}
+                      >
+                        Action Required
+                      </span>
+                    </div>
+
+                    <p style={{ margin: '4px 0 0', color: 'var(--text-secondary)', fontSize: '13px', lineHeight: 1.5 }}>
+                      College rules require a minimum 75% attendance to be eligible for end-semester examinations.
+                    </p>
+
+                    {/* Key Metrics: Total Classes, Classes Attended, More Classes to Attend */}
+                    <div
+                      style={{
+                        display: 'grid',
+                        gridTemplateColumns: 'repeat(auto-fit, minmax(170px, 1fr))',
+                        gap: '12px',
+                        marginTop: '14px',
+                      }}
+                    >
+                      <div
+                        style={{
+                          background: 'var(--bg-card-hover)',
+                          border: '1px solid var(--border-color)',
+                          padding: '12px 16px',
+                          borderRadius: 'var(--radius-lg)',
+                        }}
+                      >
+                        <span style={{ fontSize: '11px', fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                          Total Classes
+                        </span>
+                        <div style={{ fontSize: '22px', fontWeight: 800, color: 'var(--text-main)', marginTop: '3px' }}>
+                          {tot}
+                        </div>
+                      </div>
+
+                      <div
+                        style={{
+                          background: 'var(--bg-card-hover)',
+                          border: '1px solid var(--border-color)',
+                          padding: '12px 16px',
+                          borderRadius: 'var(--radius-lg)',
+                        }}
+                      >
+                        <span style={{ fontSize: '11px', fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                          Classes Attended
+                        </span>
+                        <div style={{ fontSize: '22px', fontWeight: 800, color: '#38bdf8', marginTop: '3px' }}>
+                          {pres} <span style={{ fontSize: '12px', fontWeight: 500, color: 'var(--text-muted)' }}>{late > 0 ? `(${pres} Present, ${late} Late)` : 'Present'}</span>
+                        </div>
+                      </div>
+
+                      <div
+                        style={{
+                          background: 'rgba(239, 68, 68, 0.18)',
+                          border: '1px solid rgba(239, 68, 68, 0.45)',
+                          padding: '12px 16px',
+                          borderRadius: 'var(--radius-lg)',
+                        }}
+                      >
+                        <span style={{ fontSize: '11px', fontWeight: 700, color: '#fca5a5', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                          More Classes for 75%
+                        </span>
+                        <div style={{ fontSize: '22px', fontWeight: 800, color: '#f87171', marginTop: '3px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          <span>+{moreNeeded} {moreNeeded === 1 ? 'class' : 'classes'}</span>
+                          <span
+                            style={{
+                              fontSize: '10px',
+                              fontWeight: 700,
+                              color: '#ffffff',
+                              background: 'var(--danger)',
+                              padding: '2px 6px',
+                              borderRadius: '4px',
+                              textTransform: 'uppercase',
+                            }}
+                          >
+                            Consecutive
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div style={{ marginTop: '12px', fontSize: '12.5px', color: '#fca5a5', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <span>💡</span>
+                      <span>
+                        Attend the next <strong>{moreNeeded} consecutive {moreNeeded === 1 ? 'class' : 'classes'}</strong> without missing any to restore your attendance to 75%.
+                      </span>
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
-          )}
+            );
+          })()}
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))', gap: '20px', marginBottom: '24px' }}>
             <div className="card" style={{ marginBottom: 0 }}>

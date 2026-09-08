@@ -655,7 +655,7 @@ const AttendancePage = () => {
                     </span>
                   </div>
 
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '12px', marginTop: '16px' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '12px', marginTop: '16px' }}>
                     <div style={{ background: 'var(--bg-card-hover)', border: '1px solid var(--border-color)', padding: '12px 16px', borderRadius: 'var(--radius-lg)' }}>
                       <span style={{ fontSize: '11px', fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Total Classes</span>
                       <div style={{ fontSize: '22px', fontWeight: 800, color: 'var(--text-main)', marginTop: '4px' }}>{myStats.totalClasses}</div>
@@ -672,7 +672,59 @@ const AttendancePage = () => {
                       <span style={{ fontSize: '11px', fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Absent</span>
                       <div style={{ fontSize: '22px', fontWeight: 800, color: 'var(--danger)', marginTop: '4px' }}>{myStats.absentCount}</div>
                     </div>
+                    {(() => {
+                      const tot = myStats.totalClasses || 0;
+                      const pres = myStats.presentCount || 0;
+                      const late = myStats.lateCount || 0;
+                      const effAttended = pres + (late * 0.5);
+                      const moreNeeded = Math.max(0, Math.ceil(3 * tot - 4 * effAttended));
+
+                      if (myStats.isLowAttendance || moreNeeded > 0) {
+                        return (
+                          <div style={{ background: 'rgba(239, 68, 68, 0.18)', border: '1px solid rgba(239, 68, 68, 0.45)', padding: '12px 16px', borderRadius: 'var(--radius-lg)' }}>
+                            <span style={{ fontSize: '11px', fontWeight: 700, color: '#fca5a5', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                              Needed for 75%
+                            </span>
+                            <div style={{ fontSize: '22px', fontWeight: 800, color: '#f87171', marginTop: '4px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                              <span>+{moreNeeded}</span>
+                              <span style={{ fontSize: '10px', fontWeight: 700, color: '#fff', background: 'var(--danger)', padding: '2px 6px', borderRadius: '4px', textTransform: 'uppercase' }}>
+                                Next
+                              </span>
+                            </div>
+                          </div>
+                        );
+                      }
+                      return (
+                        <div style={{ background: 'rgba(16, 185, 129, 0.12)', border: '1px solid rgba(16, 185, 129, 0.3)', padding: '12px 16px', borderRadius: 'var(--radius-lg)' }}>
+                          <span style={{ fontSize: '11px', fontWeight: 700, color: '#86efac', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                            Status
+                          </span>
+                          <div style={{ fontSize: '18px', fontWeight: 800, color: '#4ade80', marginTop: '6px' }}>
+                            Safe &ge; 75%
+                          </div>
+                        </div>
+                      );
+                    })()}
                   </div>
+
+                  {(() => {
+                    const tot = myStats.totalClasses || 0;
+                    const pres = myStats.presentCount || 0;
+                    const late = myStats.lateCount || 0;
+                    const effAttended = pres + (late * 0.5);
+                    const moreNeeded = Math.max(0, Math.ceil(3 * tot - 4 * effAttended));
+                    if (moreNeeded > 0) {
+                      return (
+                        <div style={{ marginTop: '14px', padding: '10px 14px', borderRadius: '8px', background: 'rgba(239, 68, 68, 0.12)', border: '1px solid rgba(239, 68, 68, 0.25)', fontSize: '13px', color: '#fca5a5', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          <span>💡</span>
+                          <span>
+                            Attend the next <strong>{moreNeeded} consecutive {moreNeeded === 1 ? 'class' : 'classes'}</strong> without missing any to restore your attendance to 75%.
+                          </span>
+                        </div>
+                      );
+                    }
+                    return null;
+                  })()}
                 </div>
 
                 <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
