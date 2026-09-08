@@ -117,7 +117,6 @@ export const getAdminDashboardData = async () => {
       totalRecords: totalAttendanceRecords,
       presentCount,
       absentCount,
-      lateCount,
       rate: attendanceRate,
     },
     studentDistribution,
@@ -256,7 +255,6 @@ export const getStudentDashboardData = async (userEmail) => {
 
   const attendanceRecords = await Attendance.find({ student: student._id }).populate('subject', 'name code');
   let presentCount = 0;
-  let lateCount = 0;
   let absentCount = 0;
   attendanceRecords.forEach((att) => {
     if (att.status === 'Present') presentCount += 1;
