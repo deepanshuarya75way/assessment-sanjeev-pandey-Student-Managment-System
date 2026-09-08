@@ -916,8 +916,8 @@ const DashboardPage = () => {
 
           {(dashboardData.metrics?.attendanceRate || 0) < 75 && (() => {
             const tot = dashboardData.metrics?.totalClasses || 0;
-            const pres = dashboardData.metrics?.presentCount || 0;
-            const late = dashboardData.metrics?.lateCount || 0;
+            const pres = dashboardData.metrics?.presentCount ?? dashboardData.metrics?.totalPresent ?? 0;
+            const late = dashboardData.metrics?.lateCount ?? dashboardData.metrics?.totalLate ?? 0;
             const effAttended = pres + (late * 0.5);
             const moreNeeded = Math.max(0, Math.ceil(3 * tot - 4 * effAttended));
 

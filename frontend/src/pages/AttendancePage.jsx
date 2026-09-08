@@ -658,24 +658,24 @@ const AttendancePage = () => {
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '12px', marginTop: '16px' }}>
                     <div style={{ background: 'var(--bg-card-hover)', border: '1px solid var(--border-color)', padding: '12px 16px', borderRadius: 'var(--radius-lg)' }}>
                       <span style={{ fontSize: '11px', fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Total Classes</span>
-                      <div style={{ fontSize: '22px', fontWeight: 800, color: 'var(--text-main)', marginTop: '4px' }}>{myStats.totalClasses}</div>
+                      <div style={{ fontSize: '22px', fontWeight: 800, color: 'var(--text-main)', marginTop: '4px' }}>{myStats.totalClasses || 0}</div>
                     </div>
                     <div style={{ background: 'var(--bg-card-hover)', border: '1px solid var(--border-color)', padding: '12px 16px', borderRadius: 'var(--radius-lg)' }}>
                       <span style={{ fontSize: '11px', fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Present</span>
-                      <div style={{ fontSize: '22px', fontWeight: 800, color: 'var(--success)', marginTop: '4px' }}>{myStats.presentCount}</div>
+                      <div style={{ fontSize: '22px', fontWeight: 800, color: 'var(--success)', marginTop: '4px' }}>{myStats.presentCount ?? myStats.totalPresent ?? 0}</div>
                     </div>
                     <div style={{ background: 'var(--bg-card-hover)', border: '1px solid var(--border-color)', padding: '12px 16px', borderRadius: 'var(--radius-lg)' }}>
                       <span style={{ fontSize: '11px', fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Late</span>
-                      <div style={{ fontSize: '22px', fontWeight: 800, color: 'var(--warning)', marginTop: '4px' }}>{myStats.lateCount}</div>
+                      <div style={{ fontSize: '22px', fontWeight: 800, color: 'var(--warning)', marginTop: '4px' }}>{myStats.lateCount ?? myStats.totalLate ?? 0}</div>
                     </div>
                     <div style={{ background: 'var(--bg-card-hover)', border: '1px solid var(--border-color)', padding: '12px 16px', borderRadius: 'var(--radius-lg)' }}>
                       <span style={{ fontSize: '11px', fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Absent</span>
-                      <div style={{ fontSize: '22px', fontWeight: 800, color: 'var(--danger)', marginTop: '4px' }}>{myStats.absentCount}</div>
+                      <div style={{ fontSize: '22px', fontWeight: 800, color: 'var(--danger)', marginTop: '4px' }}>{myStats.absentCount ?? myStats.totalAbsent ?? 0}</div>
                     </div>
                     {(() => {
                       const tot = myStats.totalClasses || 0;
-                      const pres = myStats.presentCount || 0;
-                      const late = myStats.lateCount || 0;
+                      const pres = myStats.presentCount ?? myStats.totalPresent ?? 0;
+                      const late = myStats.lateCount ?? myStats.totalLate ?? 0;
                       const effAttended = pres + (late * 0.5);
                       const moreNeeded = Math.max(0, Math.ceil(3 * tot - 4 * effAttended));
 
@@ -709,8 +709,8 @@ const AttendancePage = () => {
 
                   {(() => {
                     const tot = myStats.totalClasses || 0;
-                    const pres = myStats.presentCount || 0;
-                    const late = myStats.lateCount || 0;
+                    const pres = myStats.presentCount ?? myStats.totalPresent ?? 0;
+                    const late = myStats.lateCount ?? myStats.totalLate ?? 0;
                     const effAttended = pres + (late * 0.5);
                     const moreNeeded = Math.max(0, Math.ceil(3 * tot - 4 * effAttended));
                     if (moreNeeded > 0) {
