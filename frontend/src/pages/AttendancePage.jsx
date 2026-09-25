@@ -21,6 +21,78 @@ const AttendancePage = () => {
   const { user } = useAuth();
   const toast = useToast();
   const isStudent = user?.role === 'STUDENT';
+  const [isOnLine, setIsOnLine]= useState(navigator.OnLine);
+  const [syncQueue, setSyncQueue]= useState(()=>{
+    try{
+      const saved= localStorage.getItem('offline_attendance_records');
+        return saved ? JSON.parse(saved):[];
+
+      
+    }
+    catch{
+      return[];
+
+    }
+  });
+
+  useEffect(()=>{
+    localStorage.setItem('offline_attandence_records',JSON.stringify(syncQueue));
+
+  },[syncQueue]);
+
+  const processPendingSync = async()=>{
+    const saved = localStorage.getItem('offline_attendence_records');
+    const currentQueue = saved ? JSON.parse(saved) :[];
+    const pendingItems = currentQueue.filter(
+      (item) => item.syncStatus === 'pending' || item.syncStatus === 'failed'
+    );
+    if (pendingItems.length === 0) return;
+    for(const entry of pendingItems){
+      try{
+        await attendanceService.markAttendance({
+          courseId: entry.courseId,
+          subjectId: entry.subjectId,
+          teacherId: entry.teacherId,
+          date: entry.date,
+          records:entry.records,
+
+        })
+        setSyncQueue((prev)=>
+        prev.map((item)=>
+        item.id === entry.id?{...item, syncStatus: 'synced'}:item
+      )
+    );
+    toast?.success?.(`Synced attendance for ${entry.date}`)
+      }
+      catch(err){
+        setSyncQueue((prev)=>
+        prev.map((item)=>
+        item.id === entry.id ?{...item, syncStatus:'failed'}: item
+      )
+    );
+      }
+    }
+
+  };
+
+  useEffect(()=>{
+    const handleOnLine =()=>{
+      setIsOnLine(true);
+      processPendingSync();
+    };
+    const handleOffline = ()=>{
+      setIsOnLine(false);
+    };
+    window.addEventListener('online', handleOnLine);
+    window.addEventListener('offline', handleOffline);
+    if (navigator.onLine){
+      processPendingSync();
+    }
+    return()=>{
+      window.removeEventListener('online', handleOnLine);
+      window.removeEventListener('offline', handleOffline);
+    };
+  },[]);
 
   const [activeTab, setActiveTab] = useState(isStudent ? 'my_attendance' : 'mark');
 
@@ -157,6 +229,22 @@ const AttendancePage = () => {
         status: r.status,
         remarks: r.remarks,
       }));
+      const newEntry ={
+        id: 'att_' + Date.now(),
+        courseId: selectedCourse,
+        subjectId: selectedSubject,
+        teacherId: user?._id || null,
+        date:selectedDate,
+        records: records,
+        syncStatus: 'pending',
+        timestamp: new Date().toLocaleTimeString,
+      };
+      if(!navigator.onLine){
+        setSyncQueue((prev)=>[newEntry,...prev]);
+        toast.info('Ofline mode: Saved locally.will sync automatically when person is online.');
+        setSubmittingAttendance(false);
+        return;
+      }
 
       const res = await attendanceService.markAttendance({
         courseId: selectedCourse,
@@ -164,6 +252,8 @@ const AttendancePage = () => {
         date: selectedDate,
         records,
       });
+      newEntry.syncStatus = 'synced';
+      setSyncQueue((prev)=>[newEntry,...prev]);
 
       const pCount = roster.filter((r) => r.status === 'Present').length;
       const aCount = roster.filter((r) => r.status === 'Absent').length;
@@ -176,6 +266,21 @@ const AttendancePage = () => {
         fetchMyAttendance();
       }
     } catch (err) {
+      const failedEntry ={
+        id:'att_'+ Date.now(),
+        courseId: selectedCourse,
+        subjectId: selectedSubject,
+        teacherId: user?._id || null,
+        date: selectedDate,
+        records: roster.map((r)=>({
+          studentId: r.studentId,
+          status: r.status,
+          remarks: r.remarks
+        })),
+        syncStatus: 'failed',
+        timestamp: new Date().toLocaleTimeString(),
+      };
+      setSyncQueue((prev)=>[failedEntry,...prev]);
       toast.error(err.response?.data?.message || err.message || 'Failed to submit attendance');
     } finally {
       setSubmittingAttendance(false);
@@ -598,9 +703,38 @@ const AttendancePage = () => {
                   </button>
                 </div>
               )}
+              <div style={{ margin:'16px 0',padding: '10px 14px', background:'#f8fafc', border:'1px solid #e2e8f0', borderRadius:'6px'}}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems:'centre'}}>
+                  <div>
+                    <strong>Mode:</strong>
+                    <span style ={{ color:isOnLine? '#16a34a':'#dc2626',fontWeight:'bold'}}>
+                      {isOnLine?Online:'Offline'}
+                    </span>
+                  </div>
+                  <button
+                  type="button"
+                  onClick={processPendingSync}
+                  disabled={isOnLine}
+                  style={{padding:'4px 8px',fontSize:'12px',cursor:isOnLine?'pointer':'not-allowed'}}>
+                    Sync ({syncQueue.filter((q)=>q.syncStatus !=='synced').length})
+                  </button>
             </div>
+            {syncQueue.length>0&&(
+              <ul style={{margin:'8px 0 0',paddingLeft:'18px',fontSize:'13px'}}>
+              {syncQueue.map((item)=>(
+                <li key={item.id}>
+                  {item.date}-{item.records?.length||0}student-{''}
+                  <strong style={{
+                    color:item.syncStatus ==='synced'?'#16a34a':item.setSyncQueue==='pending'?'#ea580c':'#dc2626'}}>
+                      {item.syncStatus.toUpperCase()}
+                    </strong>
+                    
+                </li>
+            ))}
+                </ul>
+              )}
           </div>
-        )}
+          )
 
         {!isStudent && activeTab === 'history' && (
           <div>
@@ -917,8 +1051,11 @@ const AttendancePage = () => {
             )}
           </div>
         )}
+        </div>
+      </div>
+       )}
       </main>
-    </div>
+  </div>
   );
 };
 
